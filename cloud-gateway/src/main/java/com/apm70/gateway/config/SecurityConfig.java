@@ -1,0 +1,31 @@
+package com.apm70.gateway.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+@EnableWebFluxSecurity
+public class SecurityConfig {
+
+	@Bean
+	public SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) throws Exception {
+		return http.httpBasic().and()
+				.authorizeExchange()
+				.pathMatchers("/anything/**").authenticated()
+				.anyExchange().permitAll()
+				.and()
+				.build();
+	}
+
+	@Bean
+	public MapReactiveUserDetailsService reactiveUserDetailsService() {
+		// inmemory user config， only for dev 
+		@SuppressWarnings("deprecation")
+		UserDetails user = User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build();
+		return new MapReactiveUserDetailsService(user);
+	}
+}

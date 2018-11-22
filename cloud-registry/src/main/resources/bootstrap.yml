@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: cloud-registry
+  config:
+    name: cloud-registry
+  cloud:
+    config:
+      # cloud-config 通过本地域名配置（/etc/hosts）
+      uri: http://cloud-config:8888
+      label: master
+      fail-fast: true
+      username: config
+      password: config123
+
+# Logstash 日志配置, 通过本地域名配置（/etc/hosts）
+logstash.tcp.address: cloud-logstash

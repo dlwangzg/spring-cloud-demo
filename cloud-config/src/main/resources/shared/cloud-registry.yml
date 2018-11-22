@@ -1,0 +1,26 @@
+server:
+  port: 8761
+
+spring: 
+  profiles.active: dev
+
+security:
+  basic: 
+    enabled: true
+  user: 
+    name: admin
+    password: admin
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+logging:
+  level: 
+    org.springframework: WARN
+    com.apm70: INFO

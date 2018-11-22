@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: cloud-config
+
+# Logstash 日志配置, 通过本地域名配置（/etc/hosts）
+logstash.tcp.address: cloud-logstash
+

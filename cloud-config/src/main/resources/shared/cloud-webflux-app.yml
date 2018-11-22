@@ -1,0 +1,58 @@
+server:
+  port: 8090
+management:
+  server.port: 18090
+  endpoints.web.base-path: '/fb83deee-dd46-472b-99a9-f0ebffe28090'
+
+spring: 
+  profiles.active: dev,swagger
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:demo_db;MVCC=TRUE;LOCK_TIMEOUT=10000
+    username: sa
+    password: 
+    test-while-idle: true
+    max-wait-millis: 30000
+    validation-query: 'SELECT 1'
+    time-between-eviction-runs-millis: 20000
+    min-evictable-idle-time-millis: 28700
+  jpa: 
+    database-platform: org.hibernate.dialect.H2Dialect
+    database: H2
+    show-sql: false
+    hibernate:
+      ddl-auto: create-drop
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://admin:admin@localhost:8761/eureka/
+  instance:
+    metadata-map:
+      cluster: apm70
+      management:
+        port: ${management.server.port}
+        context-path: ${management.endpoints.web.base-path}
+      health:
+        path: ${management.endpoints.web.base-path}/health
+    status-page-url-path: ${management.endpoints.web.base-path}/info
+    health-check-url-path: ${management.endpoints.web.base-path}/health
+    prefer-ip-address: false
+
+ribbon:
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 3
+  OkToRetryOnAllOperations: false
+  ConnectTimeout: 1500
+  ReadTimeout: 2000
+  ServerListRefreshInterval: 2000
+
+hystrix: 
+  command: 
+    default: 
+      execution.isolation.thread.timeoutInMilliseconds: 10000
+      

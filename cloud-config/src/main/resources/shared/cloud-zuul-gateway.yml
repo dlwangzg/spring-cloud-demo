@@ -1,0 +1,73 @@
+server:
+  port: 8081
+management:
+  server.port: 18081
+  endpoints.web.base-path: '/fb83deee-dd46-472b-99a9-f0ebffe28081'
+
+spring: 
+  profiles.active: dev,swagger
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://admin:admin@localhost:8761/eureka/
+  instance:
+    metadata-map:
+      cluster: apm70
+      management:
+        port: ${management.server.port}
+        context-path: ${management.endpoints.web.base-path}
+      health:
+        path: ${management.endpoints.web.base-path}/health
+    status-page-url-path: ${management.endpoints.web.base-path}/info
+    health-check-url-path: ${management.endpoints.web.base-path}/health
+    prefer-ip-address: false
+
+ribbon:
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 3
+  OkToRetryOnAllOperations: false
+  ConnectTimeout: 1500
+  ReadTimeout: 2000
+  ServerListRefreshInterval: 2000
+
+hystrix: 
+  command: 
+    default: 
+      execution.isolation.thread.timeoutInMilliseconds: 10000
+
+zuul:
+  # zuul 性能优化
+  host.maxTotalConnections: 200
+  host.maxPerRouteConnections: 64
+  #semaphore.max-semaphores: 128
+  # 建议使用这种方式来设置，可以给每个不同的后端微服务设置不同的信号量
+  eureka.app1.semaphore.maxSemaphores: 2000
+  ratelimit:
+    #key-prefix: app1
+    enabled: false 
+    repository: IN_MEMORY 
+    behind-proxy: true
+    default-policy-list: #optional - will apply unless specific policy exists
+      - limit: 600000 #optional - request number limit per refresh interval window
+        #quota: 30 #optional - request time limit per refresh interval window (in seconds)
+        refresh-interval: 60 #default value (in seconds)
+        type: #optional
+          - url
+      - limit: 600000 #optional - request number limit per refresh interval window
+        #quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+        refresh-interval: 60 #default value (in seconds)
+        type: #optional
+          - user
+    policy-list:
+      app1:
+        - limit: 600000 #optional - request number limit per refresh interval window
+          #quota: 10 #optional - request time limit per refresh interval window (in seconds)
+          refresh-interval: 60 #default value (in seconds)
+          type: #optional
+            - user
+            - url
